@@ -46,6 +46,12 @@ type Payload struct {
 	ContentAvailable int         `json:"content-available,omitempty"`
 }
 
+type UnBadgePayload struct {
+	Alert            interface{} `json:"alert,omitempty"`
+	Sound            string      `json:"sound,omitempty"`
+	ContentAvailable int         `json:"content-available,omitempty"`
+}
+
 // NewPayload creates and returns a Payload structure.
 func NewPayload() *Payload {
 	return new(Payload)
@@ -104,6 +110,15 @@ func (pn *PushNotification) AddPayload(p *Payload) {
 	// through successfully.)
 	//
 	// Still a hack though :)
+	if p.Badge == -2 {
+		ubp := &UnBadgePayload{
+			Alert:            p.Alert,
+			Sound:            p.Sound,
+			ContentAvailable: p.ContentAvailable,
+		}
+		pn.Set("aps", ubp)
+		return
+	}
 	if p.Badge == 0 {
 		p.Badge = -1
 	}
